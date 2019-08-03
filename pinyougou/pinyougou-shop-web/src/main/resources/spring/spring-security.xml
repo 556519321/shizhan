@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://dubbo.apache.org/schema/dubbo"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/security
+http://www.springframework.org/schema/security/spring-security.xsd http://dubbo.apache.org/schema/dubbo http://dubbo.apache.org/schema/dubbo/dubbo.xsd">
+
+    <!--  引用 dubbo  服务  -->
+    <dubbo:application name="pinyougou-shop-web">
+        <!--  不开启 qos ； qos 可通过指令动态调动提供的服务  -->
+        <dubbo:parameter key="qos.enable" value="false"/>
+    </dubbo:application>
+    <dubbo:registry address="zookeeper://192.168.12.168:2181"/>
+    <dubbo:annotation package="com.pinyougou.shop.service.impl"/>
+
+    <!--不需要使用权限就可以访问的资源-->
+    <http pattern="/css/**" security="none"/>
+    <http pattern="/img/**" security="none"/>
+    <http pattern="/js/**" security="none"/>
+    <http pattern="/plugins/**" security="none"/>
+    <http pattern="/shoplogin.html" security="none"/>
+    <http pattern="/register.html" security="none"/>
+    <http pattern="/seller/add.do" security="none"/>
+
+    <!--配置需要角色权限才能访问的资源；use-expressions false表示不使用表达式，如：hasRole-->
+    <http use-expressions="false">
+        <!--<intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>-->
+        <intercept-url pattern="/**" access="ROLE_SELLER"/>
+
+        <!--登录表单项-->
+        <form-login login-page="/shoplogin.html" always-use-default-target="true"
+                    default-target-url="/admin/index.html" authentication-failure-url="/shoplogin.html"/>
+
+        <!--禁止跨站请求访问-->
+        <csrf disabled="true"/>
+
+        <!-- 如果使用了 iframe 等框架，希望跳转也是在框架内跳转的话；使用的与浏览器的域一样 -->
+        <headers>
+            <frame-options policy="SAMEORIGIN"/>
+        </headers>
+
+        <!--配置退出-->
+        <logout/>
+
+    </http>
+
+    <!--配置用户信息动态类-->
+    <beans:bean id="userDetailService" class="com.pinyougou.shop.service.impl.UserDetailServiceImpl"/>
+
+    <!--加密方式-->
+    <beans:bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+
+    <!--配置认证管理器-->
+    <authentication-manager>
+        <authentication-provider user-service-ref="userDetailService">
+            <password-encoder ref="passwordEncoder"/>
+            <!--<user-service>
+                &lt;!&ndash;登录的用户名，角色，密码&ndash;&gt;
+                <user name="admin" authorities="ROLE_USER" password="123456"/>
+            </user-service>-->
+        </authentication-provider>
+    </authentication-manager>
+
+</beans:beans>

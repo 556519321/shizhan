@@ -1,0 +1,11 @@
+server:
+  port: 9003
+
+#配置activeMQ的信息
+spring:
+  activemq:
+    broker-url: tcp://192.168.12.168:61616
+
+#从阿里申请的用户和秘钥
+accessKeyId: LTAINs6bfRqh2vAL
+accessKeySecret: BaZMlF9Sr2xdUYtCKaQhhuYKxvlAha

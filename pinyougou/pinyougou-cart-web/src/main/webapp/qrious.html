@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>二维码测试</title>
+    <script src="plugins/qrious.min.js"></script>
+</head>
+<body>
+<img id="qrious"/>
+
+<script type="text/javascript">
+
+    var qr = new QRious({
+        //指定那个图片元素要显示二维码
+        element: document.getElementById("qrious"),
+        //图片大小
+        size:250,
+        //容错级别
+        level:"H",
+        //二维码里面的值
+        value:"hi itcast."
+    });
+</script>
+</body>
+</html>
